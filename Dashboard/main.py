@@ -67,12 +67,13 @@ st.markdown("""
 # Function to load data
 @st.cache_data
 def load_data():
+    file_path = os.path.join(os.path.dirname(__file__), "../all_data_cleaned.csv")
+
     try:
-        df = pd.read_csv("all_data_cleaned.csv")
+        df = pd.read_csv(file_path)
         df['dteday'] = pd.to_datetime(df['dteday'])
         return df
     except FileNotFoundError:
-        # If the cleaned file is not found, use sample data for demonstration
         st.warning("File 'all_data_cleaned.csv' not found. Using sample data for demonstration.")
         
         # Generate sample data
@@ -91,7 +92,12 @@ def load_data():
             'windspeed': np.random.uniform(0, 1, n_samples),
             'cnt': np.random.randint(1, 1000, n_samples)
         }
+        
         df = pd.DataFrame(data)
+
+        # Sort by date to maintain time series consistency
+        df = df.sort_values(by='dteday').reset_index(drop=True)
+        
         return df
 
 # Load data
